@@ -1,7 +1,8 @@
-import * as React from 'react';
-import './App.css';
+import * as React from "react";
+import "./App.css";
+import * as solved from "solved";
 
-const logo = require('./logo.svg');
+const logo = require("./logo.svg");
 
 class App extends React.Component<null, null> {
   render() {
@@ -12,7 +13,10 @@ class App extends React.Component<null, null> {
           <h2>Welcome to React</h2>
         </div>
         <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
+          <small>To get started, edit <code>src/App.tsx</code> and save to reload.</small>
+          <br/>
+          <small>Available slitherlink strategies: {Object.keys(solved.Slitherlink.Strategies)
+            .filter(k => k !== "all" && k !== "register").join(", ")}</small>
         </p>
       </div>
     );

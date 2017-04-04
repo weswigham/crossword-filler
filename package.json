@@ -8,7 +8,8 @@
     "@types/react": "^15.0.21",
     "@types/react-dom": "^0.14.23",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "solved": "*"
   },
   "devDependencies": {
     "react-scripts-ts": "1.1.8"
