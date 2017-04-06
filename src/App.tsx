@@ -247,9 +247,8 @@ class App extends React.Component<null, AppState> {
       const data = sections[i + 1];
       map[name] = data;
     }
-    const capturedSize = (map.SIZE || "15x15").match(/(\d+)x\d+/);
-    const size = capturedSize ? +capturedSize[0] : 15;
     const values = this.parseValues(map.GRID);
+    const size = values.length;
 
     const across = this.generateAcross(values);
     const down = this.generateDown(across, values);
