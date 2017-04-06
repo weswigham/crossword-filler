@@ -12,7 +12,7 @@
     "@types/react-tap-event-plugin": "0.0.30",
     "material-ui": "^0.17.1",
     "react": "^15.4.2",
-    "react-datasheet": "^1.2.2",
+    "react-datasheet": "weswigham/react-datasheet",
     "react-dom": "^15.4.2",
     "react-tap-event-plugin": "^2.0.1",
     "solved": "*"

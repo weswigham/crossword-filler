@@ -1,1 +1,1 @@
-export {default as Grid, GridState as GridState, GridElement as GridElement} from "./Grid";
+export {default as Grid, GridProps as GridState, GridElement as GridElement} from "./Grid";

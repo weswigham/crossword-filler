@@ -28,11 +28,15 @@ function alterValues(values: GridElement[][], newSize: number) {
   for (let i = 0; i < values.length; i++) {
     for (let j = 0; j < values[i].length; j++) {
       if (newGrid[i] && newGrid[i][j]) {
-        newGrid[i][j] = values[i][j];
+        newGrid[i][j] = {...(values[i][j])};
       }
     }
   }
   return newGrid;
+}
+
+function clone(state: AppState) {
+  return {...state, values: alterValues(state.values, state.size)};
 }
 
 class App extends React.Component<null, AppState> {
@@ -72,14 +76,19 @@ class App extends React.Component<null, AppState> {
               />
             </div>
             <Grid
-              width={this.state.size}
-              height={this.state.size}
               values={this.state.values}
               onChange={(cell, i, j, newVal) => {
                 if (newVal.length > 1) { return; } // Forbid multiple characters in one box
-                const nextState = this.state;
+                const nextState = clone(this.state);
                 nextState.values[i][j] = { value: newVal.toLocaleUpperCase(), enabled: true };
                 this.setState(nextState);
+              }}
+              onContextMenu={(event, cell, i, j) => {
+                const nextState = clone(this.state);
+                nextState.values[i][j].enabled = !nextState.values[i][j].enabled;
+                this.setState(nextState);
+                event.preventDefault();
+                event.stopPropagation();
               }}
             />
           </div>
