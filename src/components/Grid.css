@@ -3,7 +3,3 @@ table.data-grid td.cell {
     height: 32px;
     text-align: center;
 }
-
-table.data-grid td.cell.read-only {
-    background-color: black;
-}

@@ -54,3 +54,22 @@ h5 {
   margin-bottom: 4px;
   margin-top: 8px;
 }
+
+.word-grid table.data-grid td.cell.read-only {
+    background-color: black;
+}
+
+.number-grid table.data-grid td.cell.read-only {
+  background-color: transparent;
+  font-size: 0.4em;
+  text-align: left;
+}
+
+.number-grid table.data-grid td.cell.read-only span {
+  padding-bottom: 50%;
+  padding-left: 2px;
+}
+
+.word-grid {
+  position: absolute;
+}

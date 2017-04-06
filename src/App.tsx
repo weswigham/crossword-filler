@@ -3,6 +3,7 @@ import "./App.css";
 import { Grid, GridElement } from "./components";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { Slider } from "material-ui";
+import ReactDataSheet = require("react-datasheet");
 
 interface AppState {
   size: number;
@@ -45,6 +46,8 @@ function clone(state: AppState) {
   return {...state, values: alterValues(state.values, state.size)};
 }
 
+const NumberGrid: {new (): ReactDataSheet<{value: string, readOnly: boolean}>} = ReactDataSheet;
+
 class App extends React.Component<null, AppState> {
   private across: WordRef[] = [];
   private down: WordRef[] = [];
@@ -86,32 +89,37 @@ class App extends React.Component<null, AppState> {
                 }}
               />
             </div>
-            <Grid
-              values={this.state.values}
-              onChange={(cell, i, j, newVal) => {
-                if (newVal.length > 1) { return; } // Forbid multiple characters in one box
-                const nextState = clone(this.state);
-                nextState.values[i][j] = { value: newVal.toLocaleUpperCase(), enabled: true };
-                this.setState(nextState);
-              }}
-              onContextMenu={(event, cell, i, j) => {
-                const nextState = clone(this.state);
-                nextState.values[i][j].enabled = !nextState.values[i][j].enabled;
-                if (nextState.values[i][j].enabled === false) {
-                  nextState.values[i][j].value = "";
-                }
-                if (this.state.symmetry) {
-                  nextState.values[reflect(i)][reflect(j)].enabled
-                     = nextState.values[i][j].enabled;
-                  if (!nextState.values[reflect(i)][reflect(j)].enabled) {
-                    nextState.values[reflect(i)][reflect(j)].value = "";
+            <div className="word-grid">
+              <Grid
+                values={this.state.values}
+                onChange={(cell, i, j, newVal) => {
+                  if (newVal.length > 1) { return; } // Forbid multiple characters in one box
+                  const nextState = clone(this.state);
+                  nextState.values[i][j] = { value: newVal.toLocaleUpperCase(), enabled: true };
+                  this.setState(nextState);
+                }}
+                onContextMenu={(event, cell, i, j) => {
+                  const nextState = clone(this.state);
+                  nextState.values[i][j].enabled = !nextState.values[i][j].enabled;
+                  if (nextState.values[i][j].enabled === false) {
+                    nextState.values[i][j].value = "";
                   }
-                }
-                this.setState(nextState);
-                event.preventDefault();
-                event.stopPropagation();
-              }}
-            />
+                  if (this.state.symmetry) {
+                    nextState.values[reflect(i)][reflect(j)].enabled
+                      = nextState.values[i][j].enabled;
+                    if (!nextState.values[reflect(i)][reflect(j)].enabled) {
+                      nextState.values[reflect(i)][reflect(j)].value = "";
+                    }
+                  }
+                  this.setState(nextState);
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+              />
+            </div>
+            <div className="number-grid">
+              <NumberGrid data={this.generateNumbers()} onChange={() => ({})} valueRenderer={cell => cell.value}/>
+            </div>
             <div>
               <label>Enforce Symmetry</label>
               <input
@@ -152,6 +160,23 @@ class App extends React.Component<null, AppState> {
         </div>
       </MuiThemeProvider>
     );
+  }
+  private generateNumbers() {
+    const numberGrid: {value: string, readOnly: boolean}[][] = [];
+    for (let i = 0; i < this.state.values.length; i++) {
+      for (let j = 0; j < this.state.values[i].length; j++) {
+        numberGrid[i] = numberGrid[i] || [];
+        numberGrid[i][j] = {value: "", readOnly: true};
+      }
+    }
+    for (const a of this.across) {
+      numberGrid[a.pos.i][a.pos.j].value = a.reference.toString();
+    }
+
+    for (const a of this.down) {
+      numberGrid[a.pos.i][a.pos.j].value = a.reference.toString();
+    }
+    return numberGrid;
   }
   private fill() {
     void 0;
