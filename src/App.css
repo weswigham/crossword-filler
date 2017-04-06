@@ -33,3 +33,24 @@
   display: inline-block;
   width: 100%;
 }
+
+.across-list {
+  float: left;
+  min-width: 40%;
+  text-align: left;
+}
+
+.down-list {
+  float: left;
+  text-align: left;
+}
+
+.unstyled-list {
+  list-style: none;
+  padding-left: 0px;
+}
+
+h5 {
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
