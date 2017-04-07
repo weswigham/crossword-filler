@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./App.css";
+import * as ReactDOM from "react-dom";
 import { Grid, GridElement } from "./components";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { Slider } from "material-ui";
@@ -172,6 +172,67 @@ class App extends React.Component<null, AppState> {
               </select>
               <button onClick={() => this.export()}>Export</button>
               <button onClick={() => document.getElementById("load-file")!.click()}>Load File</button>
+              <button
+                onClick={() => {
+                const win = window.open(
+                  "",
+                  this.state.title,
+                  "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes"
+                );
+                ReactDOM.render(
+                (
+                <div className="App-print">
+                  <h1>{this.state.title}</h1>
+                  <div className="word-grid">
+                    <Grid
+                      values={this.makeEmptyGrid()}
+                      onChange={(cell, i, j, newVal) => ({})}
+                      onContextMenu={(event, cell, i, j) => ({})}
+                    />
+                  </div>
+                  <div className="number-grid">
+                    <NumberGrid data={this.generateNumbers()} onChange={() => ({})} valueRenderer={cell => cell.value}/>
+                  </div>
+                  <div className="across-list">
+                    <h1>Across</h1>
+                    <ul className="unstyled-list">
+                    {
+                      this.state.across.map((e, i) => (
+                        <li>
+                          {e.reference}. {e.text}
+                        </li>
+                      ))
+                    }
+                    </ul>
+                  </div>
+                  <div className="down-list">
+                    <h1>Down</h1>
+                    <ul className="unstyled-list">
+                    {
+                      this.state.down.map((e, i) => (
+                        <li>
+                          {e.reference}. {e.text}
+                        </li>
+                      ))
+                    }
+                    </ul>
+                  </div>
+                </div>
+                ),
+                win.document.body);
+                const cssContent = 
+                // tslint:disable-next-line
+                  require("!!../node_modules/css-loader/index.js?importLoaders=1!../node_modules/postcss-loader/index.js!./index.css");
+                const cssContent2 = 
+                // tslint:disable-next-line
+                  require("!!../node_modules/css-loader/index.js?importLoaders=1!../node_modules/postcss-loader/index.js!react-datasheet/lib/react-datasheet.css");
+                win.document.head.innerHTML = `
+                <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+                <style>${cssContent[0][1]}</style>
+                <style>${cssContent2[0][1]}</style>`;
+                }}
+              >Print Version
+              </button>
               <input
                 id="load-file"
                 name="Load file"
@@ -222,7 +283,7 @@ class App extends React.Component<null, AppState> {
               </ul>
             </div>
           </div>
-        </div>
+          </div>
       </MuiThemeProvider>
     );
   }
@@ -242,6 +303,20 @@ class App extends React.Component<null, AppState> {
       numberGrid[a.pos.i][a.pos.j].value = a.reference.toString();
     }
     return numberGrid;
+  }
+  private makeEmptyGrid() {
+    const emptyGrid: {value: string, enabled: boolean, readOnly: boolean}[][] = [];
+    for (let i = 0; i < this.state.values.length; i++) {
+      for (let j = 0; j < this.state.values[i].length; j++) {
+        emptyGrid[i] = emptyGrid[i] || [];
+        emptyGrid[i][j] = {
+          value: "",
+          readOnly: !this.state.values[i][j].enabled,
+          enabled: this.state.values[i][j].enabled
+        };
+      }
+    }
+    return emptyGrid;
   }
   private additionalWords() {
     return [

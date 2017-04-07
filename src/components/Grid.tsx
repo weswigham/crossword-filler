@@ -1,6 +1,5 @@
 import ReactDataSheet = require("react-datasheet");
 import "react-datasheet/lib/react-datasheet.css";
-import "./Grid.css";
 import * as React from "react";
 
 export interface GridElement extends ReactDataSheet.Cell {

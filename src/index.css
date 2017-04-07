@@ -3,3 +3,91 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.word-grid table.data-grid td.cell {
+    width: 32px;
+    height: 32px;
+    text-align: center;
+}
+
+.number-grid table.data-grid td.cell {
+    width: 32px;
+    height: 32px;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.grid-container {
+  display: inline-block;
+  padding: 24px;
+  width: 70%;
+}
+
+.top-slider {
+  display: inline-block;
+  width: 100%;
+}
+
+.across-list {
+  float: left;
+  min-width: 40%;
+  text-align: left;
+}
+
+.down-list {
+  float: left;
+  text-align: left;
+}
+
+.unstyled-list {
+  list-style: none;
+  padding-left: 0px;
+}
+
+h5 {
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+
+.word-grid table.data-grid td.cell.read-only {
+    background-color: black;
+    -webkit-print-color-adjust: exact;
+}
+
+.number-grid table.data-grid td.cell.read-only {
+  background-color: transparent;
+  font-size: 0.4em;
+  text-align: left;
+}
+
+.number-grid table.data-grid td.cell.read-only span {
+  padding-bottom: 50%;
+  padding-left: 2px;
+}
+
+.word-grid {
+  position: absolute;
+}
