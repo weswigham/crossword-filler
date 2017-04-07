@@ -58802,12 +58802,12 @@
 	    function App() {
 	        var _this = _super.call(this) || this;
 	        _this.dictionaries = [
-	            { name: "Unix", content: "."+__webpack_require__(573) },
-	            { name: "Pocket", content: "."+__webpack_require__(571) },
-	            { name: "Compounds", content: "."+__webpack_require__(570) },
-	            { name: "Enable", content: "."+__webpack_require__(569) },
-	            { name: "UK Academic", content: "."+__webpack_require__(572) },
-	            { name: "All Words", content: "."+__webpack_require__(568) }
+	            { name: "Unix", content: "." + __webpack_require__(573) },
+	            { name: "Pocket", content: "." + __webpack_require__(571) },
+	            { name: "Compounds", content: "." + __webpack_require__(570) },
+	            { name: "Enable", content: "." + __webpack_require__(569) },
+	            { name: "UK Academic", content: "." + __webpack_require__(572) },
+	            { name: "All Words", content: "." + __webpack_require__(568) }
 	        ];
 	        _this.state = {
 	            size: 15,
@@ -58936,6 +58936,9 @@
 	        }
 	        return numberGrid;
 	    };
+	    App.prototype.additionalWords = function () {
+	        return this.state.across.map(function (s) { return s.pattern; }).concat(this.state.down.map(function (s) { return s.pattern; })).filter(function (s) { return s.indexOf("?") === -1; });
+	    };
 	    App.prototype.fill = function () {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var _this = this;
@@ -58949,6 +58952,7 @@
 	                    case 1: return [4 /*yield*/, (_a.sent()).text()];
 	                    case 2:
 	                        content = _a.sent();
+	                        content += ("\n" + this.additionalWords().join("\n")); // Include all current completed words in dict
 	                        dict = new solved.Crossword.BasicDictionary(content);
 	                        solver = new solved.Crossword.Solver(dict, false);
 	                        solutionsIterator = solver.solutions(input);
@@ -58980,6 +58984,7 @@
 	                    case 1: return [4 /*yield*/, (_a.sent()).text()];
 	                    case 2:
 	                        content = _a.sent();
+	                        content += ("\n" + this.additionalWords().join("\n")); // Include all current completed words in dict
 	                        dict = new solved.Crossword.BasicDictionary(content);
 	                        solver = new solved.Crossword.Solver(dict, true);
 	                        nextStep = solver.enumerateNext(input);
@@ -63976,4 +63981,4 @@
 
 /***/ }
 /******/ ])));
-//# sourceMappingURL=main.6ab81631.js.map
+//# sourceMappingURL=main.90e31799.js.map
