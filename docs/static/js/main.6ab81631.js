@@ -58802,12 +58802,12 @@
 	    function App() {
 	        var _this = _super.call(this) || this;
 	        _this.dictionaries = [
-	            { name: "Unix", content: __webpack_require__(573) },
-	            { name: "Pocket", content: __webpack_require__(571) },
-	            { name: "Compounds", content: __webpack_require__(570) },
-	            { name: "Enable", content: __webpack_require__(569) },
-	            { name: "UK Academic", content: __webpack_require__(572) },
-	            { name: "All Words", content: __webpack_require__(568) }
+	            { name: "Unix", content: "."+__webpack_require__(573) },
+	            { name: "Pocket", content: "."+__webpack_require__(571) },
+	            { name: "Compounds", content: "."+__webpack_require__(570) },
+	            { name: "Enable", content: "."+__webpack_require__(569) },
+	            { name: "UK Academic", content: "."+__webpack_require__(572) },
+	            { name: "All Words", content: "."+__webpack_require__(568) }
 	        ];
 	        _this.state = {
 	            size: 15,
