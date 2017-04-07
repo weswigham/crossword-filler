@@ -69,12 +69,12 @@ const NumberGrid: {new (): ReactDataSheet<{value: string, readOnly: boolean}>} =
 
 class App extends React.Component<null, AppState> {
   dictionaries = [
-    {name: "Unix", content: require("./dictionaries/unixdict.txt")},
-    {name: "Pocket", content: require("./dictionaries/pocket.txt")},
-    {name: "Compounds", content: require("./dictionaries/mbcompnd.txt")},
-    {name: "Enable", content: require("./dictionaries/enable1.txt")},
-    {name: "UK Academic", content: require("./dictionaries/ukacdasc.txt")},
-    {name: "All Words", content: require("./dictionaries/allwords.txt")}
+    {name: "Unix", content: "." + require("./dictionaries/unixdict.txt")},
+    {name: "Pocket", content: "." + require("./dictionaries/pocket.txt")},
+    {name: "Compounds", content: "." + require("./dictionaries/mbcompnd.txt")},
+    {name: "Enable", content: "." + require("./dictionaries/enable1.txt")},
+    {name: "UK Academic", content: "." + require("./dictionaries/ukacdasc.txt")},
+    {name: "All Words", content: "." + require("./dictionaries/allwords.txt")}
   ];
   constructor() {
     super();
@@ -243,11 +243,18 @@ class App extends React.Component<null, AppState> {
     }
     return numberGrid;
   }
+  private additionalWords() {
+    return [
+        ...this.state.across.map(s => s.pattern),
+        ...this.state.down.map(s => s.pattern)
+      ].filter(s => s.indexOf("?") === -1);
+  }
   private async fill() {
     // This should really be done on another thread. Just sayin'.
     const input = intoCrosswordState(this.state);
     const contentPath = this.dictionaries.find(d => d.name === this.state.dict)!.content;
-    const content = await (await fetch(contentPath)).text();
+    let content = await (await fetch(contentPath)).text();
+    content += ("\n" + this.additionalWords().join("\n")); // Include all current completed words in dict
     const dict = new solved.Crossword.BasicDictionary(content);
     const solver = new solved.Crossword.Solver(dict, false);
     const solutionsIterator = solver.solutions(input);
@@ -265,7 +272,8 @@ class App extends React.Component<null, AppState> {
     // This should really be done on another thread. Just sayin'.
     const input = intoCrosswordState(this.state);
     const contentPath = this.dictionaries.find(d => d.name === this.state.dict)!.content;
-    const content = await (await fetch(contentPath)).text();
+    let content = await (await fetch(contentPath)).text();
+    content += ("\n" + this.additionalWords().join("\n")); // Include all current completed words in dict
     const dict = new solved.Crossword.BasicDictionary(content);
     const solver = new solved.Crossword.Solver(dict, true);
     const nextStep = solver.enumerateNext(input);
