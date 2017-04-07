@@ -4,6 +4,7 @@ import { Grid, GridElement } from "./components";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { Slider } from "material-ui";
 import ReactDataSheet = require("react-datasheet");
+import * as solved from "solved";
 
 interface AppState {
   size: number;
@@ -12,6 +13,7 @@ interface AppState {
   title: string;
   across: WordRef[];
   down: WordRef[];
+  dict: string;
 }
 
 interface WordRef {
@@ -53,9 +55,27 @@ function clone(state: AppState) {
   };
 }
 
+function intoCrosswordState(state: AppState): solved.Crossword.State {
+  return {
+    values: state.values.map(v => v.map(e => e.enabled ? e.value ? e.value : "?" : "."))
+  };
+}
+
+function intoAppCompatibleState(result: solved.Crossword.State) {
+  return result.values.map(v => v.map(e => ({enabled: e !== ".", value: e === "." || e === "?" ? "" : e})));
+}
+
 const NumberGrid: {new (): ReactDataSheet<{value: string, readOnly: boolean}>} = ReactDataSheet;
 
 class App extends React.Component<null, AppState> {
+  dictionaries = [
+    {name: "Unix", content: require("./dictionaries/unixdict.txt")},
+    {name: "Pocket", content: require("./dictionaries/pocket.txt")},
+    {name: "Compounds", content: require("./dictionaries/mbcompnd.txt")},
+    {name: "Enable", content: require("./dictionaries/enable1.txt")},
+    {name: "UK Academic", content: require("./dictionaries/ukacdasc.txt")},
+    {name: "All Words", content: require("./dictionaries/allwords.txt")}
+  ];
   constructor() {
     super();
     this.state = {
@@ -65,6 +85,7 @@ class App extends React.Component<null, AppState> {
       title: "",
       across: [],
       down: [],
+      dict: "Unix",
     };
   }
   render() {
@@ -143,7 +164,12 @@ class App extends React.Component<null, AppState> {
                 checked={this.state.symmetry}
                 onChange={() => this.setState({...this.state, symmetry: !this.state.symmetry})}
               />
-              <button onClick={() => this.fill()}>Fill</button>
+              <button onClick={() => this.fill()}>Fill (This may take time)</button>
+              <button onClick={() => this.step()}>Step</button>
+              <select value={this.state.dict} onChange={e => this.setState({...this.state, dict: e.target.value})}>
+                {this.dictionaries.map((d) => 
+                (<option value={d.name} key={d.name}>{d.name}</option>))}
+              </select>
               <button onClick={() => this.export()}>Export</button>
               <button onClick={() => document.getElementById("load-file")!.click()}>Load File</button>
               <input
@@ -217,8 +243,41 @@ class App extends React.Component<null, AppState> {
     }
     return numberGrid;
   }
-  private fill() {
-    void 0;
+  private async fill() {
+    // This should really be done on another thread. Just sayin'.
+    const input = intoCrosswordState(this.state);
+    const contentPath = this.dictionaries.find(d => d.name === this.state.dict)!.content;
+    const content = await (await fetch(contentPath)).text();
+    const dict = new solved.Crossword.BasicDictionary(content);
+    const solver = new solved.Crossword.Solver(dict, false);
+    const solutionsIterator = solver.solutions(input);
+    const next = solutionsIterator.next();
+    if (next && next.value) {
+      const values = intoAppCompatibleState(next.value);
+      const across = this.generateAcross(values);
+      const down = this.generateDown(across, values);
+      this.setState({...this.state, values, across, down});
+    } else {
+      alert("No solution could be found. Try filling in more values, or using the 'step' button.");
+    }
+  }
+  private async step() {
+    // This should really be done on another thread. Just sayin'.
+    const input = intoCrosswordState(this.state);
+    const contentPath = this.dictionaries.find(d => d.name === this.state.dict)!.content;
+    const content = await (await fetch(contentPath)).text();
+    const dict = new solved.Crossword.BasicDictionary(content);
+    const solver = new solved.Crossword.Solver(dict, true);
+    const nextStep = solver.enumerateNext(input);
+    const next = nextStep.next();
+    if (next && next.value) {
+      const values = intoAppCompatibleState(next.value);
+      const across = this.generateAcross(values);
+      const down = this.generateDown(across, values);
+      this.setState({...this.state, values, across, down});
+    } else {
+      alert("No next step could be found. Try filling in more values, using a new dictionary, or altering the puzzle.");
+    }
   }
   private parseValues(text: string): GridElement[][] {
     const charArray = text.trim().split("\n").map(l => l.trim().split(""));
@@ -260,7 +319,8 @@ class App extends React.Component<null, AppState> {
       symmetry: true,
       values,
       across,
-      down
+      down,
+      dict: "Unix"
     };
   }
   private load(evt: React.ChangeEvent<HTMLInputElement>) {
